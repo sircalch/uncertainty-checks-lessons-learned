@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage[font=small,labelfont=bf,labelsep=period]{caption}
+\newcommand{\tabdir}{tables}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}.}
+
+\title{\textbf{Supplementary Information}\\[4pt]\large Validated uncertainty estimates for molecular dynamics time series: equilibration detection, autocorrelation-corrected intervals and replica-consistency testing in MDCheck}
+\author{Andr\'es Monreal-Hern\'andez$^{1}$, Sara Lizbeth Franco Amaya$^{2}$, Carlos Ivanhoe Mart\'inez Osorio$^{3}$\\
+\small $^{1}$Universidad Estatal de Sonora, Hermosillo, Sonora, Mexico; $^{2}$Doctorado en Nanotecnolog\'ia and $^{3}$Doctorado en Ciencia de Materiales, Universidad de Sonora, Hermosillo, Sonora, Mexico}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Comparison of statistical-inefficiency estimators}
+
+All four estimators were applied to the same production segments. For the MD data, the segments start at the MDCheck equilibration time. Each interval is $\bar x \pm t_{N/g-1}\, s\sqrt{g/N}$, and only $g$ changes between columns. On AR(1) processes (300 series of $N = 20\,000$) and on the OpenMM replicas, the choice of estimator changes coverage by less than 0.01. The shortfall for 100~ps water replicas is therefore common to all estimators that use only the series itself.
+
+\begin{table}[h]
+\centering\small
+\caption{Coverage of the reference (or true) mean and, in parentheses, median $\hat g$ for four inefficiency estimators: the Madras--Sokal self-consistent window with $c=6$ (MDCheck), truncation at the first negative autocorrelation, Geyer's initial monotone sequence, and \texttt{pymbar.timeseries.statistical\_inefficiency}.}
+\input{\tabdir/table_estimators.tex}
+\end{table}
+
+\section{Series length and window constant}
+
+\begin{table}[h]
+\centering\small
+\caption{Coverage of nominal 95\% intervals for the mean of AR(1) processes against series length (500 series per row). Naive: $\bar x\pm1.96\,s/\sqrt N$. $z$: $\bar x\pm1.96\,s\sqrt{\hat g/N}$. $t$: MDCheck interval with window constant $c$. $N/g$ is the true effective sample size.}
+\resizebox{\textwidth}{!}{\input{\tabdir/table_length.tex}}
+\end{table}
+
+\section{Runtime of equilibration detection}
+
+\begin{table}[h]
+\centering\small
+\caption{Wall-clock time in seconds, with the detected equilibration time in samples in parentheses, for AR(1) series ($\phi=0.9$) with an exponential transient. MDCheck 1.1 uses the hierarchical search; ``MDCheck 1.0 grid'' is the exhaustive stride-10 search of version 1.0.0; pymbar \texttt{fast} uses \texttt{nskip}$=N/200$. Entries marked -- were not run because they take more than a few minutes. Single core, AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD / Python 3.12.10.}
+\input{\tabdir/table_runtime.tex}
+\end{table}
+
+\section{Simulation protocols}
+
+\begin{table}[h]
+\centering\small
+\caption{OpenMM 8.6.1 simulation settings (OpenCL platform, Langevin middle integrator, friction 1~ps$^{-1}$).}
+\resizebox{\textwidth}{!}{\begin{tabular}{llll}
+\toprule
+ & Lennard-Jones argon & TIP3P water & Villin headpiece (HP35) \\
+\midrule
+Particles & 864 atoms, fcc start & 887 molecules (2661 atoms), 3~nm Modeller box & 35 residues + 2761 TIP3P (8867 atoms), OpenMM \texttt{test.pdb} \\
+Interactions & LJ, $\sigma=3.405$~\AA, $\varepsilon/k_B=119.8$~K & TIP3P, PME, 0.9~nm cutoff, rigid water & Amber14, TIP3P, PME, 0.9~nm cutoff \\
+Cutoff / corrections & $3\sigma$, long-range dispersion & PME reciprocal space & PME; H-bond constraints; H mass 4~u \\
+Ensemble & NVT, $T=94.4$~K, $\rho^*=0.8442$ & NPT, 300~K, 1~bar (MC barostat, every 25 steps) & NPT, 300~K, 1~bar (MC barostat, every 25 steps) \\
+Time step & 10~fs & 2~fs & 4~fs \\
+Initial velocities & 94.4~K & 200~K & 300~K \\
+Sampling interval & 0.25~ps & 0.2~ps & 5~ps \\
+Short replicas & 48 $\times$ 150~ps & 24 $\times$ 100~ps; 24 $\times$ 300~ps & 24 $\times$ 2~ns \\
+Reference runs & 4 $\times$ 1500~ps (discard 100~ps) & 4 $\times$ 600~ps (discard 50~ps); 4 $\times$ 1200~ps (discard 100~ps) & 4 $\times$ 15~ns (discard 2~ns) \\
+Observables & potential energy & potential energy, density & potential energy, $R_g$, C$\alpha$ RMSD \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[h]
+\centering\small
+\caption{Reference means from the long runs; the standard error is from the spread of the run means.}
+\resizebox{\textwidth}{!}{\begin{tabular}{llrrl}
+\toprule
+System & Observable & Reference mean & SE & Runs \\
+\midrule
+LJ argon & $U$ (kJ\,mol$^{-1}$) & $-$5170.22 & 0.50 & 4 $\times$ 1500~ps (discard 100~ps) \\
+TIP3P water & $U$ (kJ\,mol$^{-1}$) & $-$35455.14 & 4.79 & 4 $\times$ 600~ps (discard 50~ps) \\
+TIP3P water & $\rho$ (g\,cm$^{-3}$) & 0.98319 & 0.00025 & 4 $\times$ 600~ps (discard 50~ps) \\
+TIP3P water (300~ps campaign) & $U$ (kJ\,mol$^{-1}$) & $-$35472.17 & 3.75 & 4 $\times$ 1200~ps (discard 100~ps) \\
+TIP3P water (300~ps campaign) & $\rho$ (g\,cm$^{-3}$) & 0.98402 & 0.00030 & 4 $\times$ 1200~ps (discard 100~ps) \\
+Villin & $U$ (kJ\,mol$^{-1}$) & $-$115252.25 & 4.75 & 4 $\times$ 15~ns (discard 2~ns) \\
+Villin & $R_g$ (nm) & 0.95659 & 0.00383 & 4 $\times$ 15~ns (discard 2~ns) \\
+Villin & C$\alpha$ RMSD (nm) & 0.14282 & 0.00916 & 4 $\times$ 15~ns (discard 2~ns) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+All raw time series (files \texttt{md\_*\_series.npz} in the \texttt{validation/results*} folders), per-replica results and the scripts that generate every table and figure are distributed with MDCheck at \url{https://github.com/sircalch/mdcheck}.
+
+\section{FEPCert: reproduction}
+The GROMACS analyses are produced by \texttt{validation/benchmark\_alchemtest.py} (alchemlyb 2.5.0, alchemtest, pymbar 4.0.3), the cycle analysis by \texttt{validation/benchmark\_cycles.py} (networkx 3.6), and the figures and tables by \texttt{validation/make\_figures.py}. FEPCert 1.1.0 is loaded from a checkout of commit 83ff97a. In the \textit{short} variant, the first 5\% of the samples of every state are used (at least 20); in the \textit{sparse} and \textit{very sparse} variants every second or fourth state is kept together with the last one. Energies are in kJ\,mol$^{-1}$.
+
+\section{FEPCert: all GROMACS analyses}
+\begin{table}[h]
+\centering\small
+\caption{TI and BAR estimates (kJ\,mol$^{-1}$), smallest neighbouring-state overlap of multi-state MBAR, and the verdicts of the overlap, time-convergence and TI/BAR checks of FEPCert 1.1.0 and 1.2 (n/a: not computed for multi-component legs by 1.1.0, which rejected them, or by the single-component convergence check).}
+\label{tab:s4}
+\resizebox{\linewidth}{!}{\input{\tabdir/table_s_analyses.tex}}
+\end{table}
+
+
+\end{document}
