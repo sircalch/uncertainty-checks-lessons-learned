@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this article, please cite it as below."
+type: article
+title: "Uncertainty and consistency checks for molecular simulation, tested on known answers and real data: MDCheck for time-series averages and FEPCert for alchemical free-energy analyses"
+authors:
+  - family-names: "Monreal-Hernández"
+    given-names: "Andrés"
+    affiliation: "Universidad Estatal de Sonora"
+    orcid: "https://orcid.org/0009-0009-1207-8597"
+  - family-names: "Franco Amaya"
+    given-names: "Sara Lizbeth"
+    affiliation: "Universidad de Sonora"
+    orcid: "https://orcid.org/0009-0005-0272-0241"
+  - family-names: "Martínez Osorio"
+    given-names: "Carlos Ivanhoe"
+    affiliation: "Universidad de Sonora"
+    orcid: "https://orcid.org/0009-0003-7872-4965"
+version: "0.9"
+date-released: 2026-11-20
+license: CC-BY-4.0
+repository-code: "https://github.com/sircalch/uncertainty-checks-lessons-learned"
+keywords:
+  - molecular dynamics
+  - statistical inefficiency
+  - free energy perturbation
+  - cycle closure
+  - uncertainty quantification
+references:
+  - type: software
+    title: "MDCheck"
+    doi: 10.5281/zenodo.23719908
+  - type: software
+    title: "FEPCert"
+    doi: 10.5281/zenodo.23085662
